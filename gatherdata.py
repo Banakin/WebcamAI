@@ -15,38 +15,40 @@ app.grid()
 lmain = tkinter.Label(app)
 lmain.grid()
 
-imageOneindex = tkinter.IntVar(app, value=0);
-imageTwoindex = tkinter.IntVar(app, value=0);
+imageIndex = tkinter.IntVar(app, value=0);
+
+annotationsFile = open(os.path.join("./data/CustomDataset/raw/images.csv"), "a+")
+
+testImageData = [100, 0]
 
 # Create a button for saving the image to the first data set
-def saveOneImage():
+def saveImage():
    print("Saving image");
    img = video_stream();
-   path = os.path.join("./data/images/with_me", str(imageOneindex.get())+".png");
-   img.save(path, "PNG");
-   print("Image saved at "+path);
-   imageOneindex.set(imageOneindex.get()+1)
+   name = "image"+str(imageIndex.get())+".png"
 
-tkinter.Button(app, text ="Save image to first dataset", command = saveOneImage).grid();
-
-# Create a button for saving the image to the second data set
-def saveTwoImage():
-   print("Saving image");
-   img = video_stream();
-   path = os.path.join("./data/images/without_me", str(imageTwoindex.get())+".png");
-   img.save(path, "PNG");
+   # Save image
+   path = os.path.join("./data/CustomDataset/raw/", name)
+   img.save(path, "PNG")
    print("Image saved at "+path)
-   imageTwoindex.set(imageTwoindex.get()+1)
 
-tkinter.Button(app, text ="Save image to second dataset", command = saveTwoImage).grid();
+   # Save data associated with the image
+   data = name;
+   for dataPoint in testImageData:
+       data += ", "+str(dataPoint)
+   data += "\n"
+   annotationsFile.write(data)
+   print(data)
+   annotationsFile.read() # i have to read the file or else it doesn't save for some reason
 
-tkinter.Label(app, text="Index of first data set").grid();
-i1 = tkinter.Entry(app, textvariable=imageOneindex)
+   # Update the index
+   imageIndex.set(imageIndex.get()+1)
+
+tkinter.Button(app, text ="Save image", command = saveImage).grid();
+
+tkinter.Label(app, text="Image Index").grid();
+i1 = tkinter.Entry(app, textvariable=imageIndex)
 i1.grid()
-
-tkinter.Label(app, text="Index of second data set").grid();
-i2 = tkinter.Entry(app, textvariable=imageTwoindex)
-i2.grid()
 
 # Capture from camera
 cv2capture = cv2.VideoCapture(0)
@@ -83,6 +85,8 @@ def display_video():
 def main():
     display_video()
     window.mainloop()
+    print("Closing annotations file")
+    annotationsFile.close()
 
 if __name__ == "__main__":
     main();
