@@ -3,9 +3,10 @@ import numpy as np
 import tkinter
 from PIL import ImageTk, Image
 import cv2
-
+import os
 
 window = tkinter.Tk()
+# Title the window
 window.title("Data Capture");
 # Create a frame
 app = tkinter.Frame(window, bg="white")
@@ -13,10 +14,11 @@ app.grid()
 # Create a label in the window
 lmain = tkinter.Label(app)
 lmain.grid()
+
 # Create a button for saving the image in the window
 def saveImage():
    print("Saving image");
-   img = ImageTk.getimage(lmain);
+   img = video_stream();
    img.save(os.path.join("./data/images/with_me", "1.png"), "PNG");
 
 saveImgButton = tkinter.Button(window, text ="Save image", command = saveImage)
@@ -25,7 +27,6 @@ saveImgButton.grid();
 # Capture from camera
 cv2capture = cv2.VideoCapture(0)
 
-while(cv2capture.);
 # function for video streaming
 def video_stream():
     _, frame = cv2capture.read()
@@ -44,16 +45,19 @@ def video_stream():
     resized_image = cv2.resize(cropped_image, (96, 96));
 
     # Make image work in tkinter
-    img = Image.fromarray(resized_image)
+    return Image.fromarray(resized_image)
+
+def display_video():
+    img = video_stream();
     imgtk = ImageTk.PhotoImage(image=img)
 
     # Add feed to window
     lmain.imgtk = imgtk
     lmain.configure(image=imgtk)
-    lmain.after(1, video_stream)
+    lmain.after(1, display_video)
 
 
-video_stream()
+display_video()
 window.mainloop()
 
 # def main():
