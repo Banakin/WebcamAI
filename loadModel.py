@@ -7,13 +7,13 @@ model = NeuralNetwork()
 model.load_state_dict(torch.load("model/model.pth"))
 
 classes = [
-    "Does not have brendan",
-    "Has brendan",
+    "No person",
+    "Has person",
 ]
 
 def main():
     model.eval()
-    x, y = test_data[5][0], test_data[5][1]
+    x, y = test_data[0][0], test_data[0][1]
     with torch.no_grad():
         pred = model(x)
         predicted, actual = classes[pred[0].argmax(0)], classes[y]
