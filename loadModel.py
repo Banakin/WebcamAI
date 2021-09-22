@@ -13,7 +13,7 @@ classes = [
 
 def main():
     model.eval()
-    x, y = test_data[1][0], test_data[1][1]
+    x, y = test_data[5][0], test_data[5][1]
     with torch.no_grad():
         pred = model(x)
         predicted, actual = classes[pred[0].argmax(0)], classes[y]

@@ -17,8 +17,7 @@ lmain.grid()
 
 imageIndex = tkinter.IntVar(app, value=0);
 imageData = tkinter.StringVar(app, value="1");
-
-annotationsFile = open(os.path.join("./data/CustomDataset/raw/images.csv"), "a+")
+datasetPath = tkinter.StringVar(app, value="./data/CustomDataset/raw");
 
 # Create a button for saving the image to the first data set
 def saveImage():
@@ -27,15 +26,17 @@ def saveImage():
     name = "image"+str(imageIndex.get())+".png"
 
     # Save image
-    path = os.path.join("./data/CustomDataset/raw/", name)
+    path = os.path.join(datasetPath.get(), name)
     img.save(path, "PNG")
     print("Image saved at "+path)
 
     # Save data associated with the image
+    annotationsFile = open(os.path.join(datasetPath.get(), "images.csv"), "a+")
     data = name+", "+imageData.get()+"\n"
     annotationsFile.write(data)
     print(data)
     annotationsFile.read() # i have to read the file or else it doesn't save for some reason
+    annotationsFile.close() # close the file
 
     # Update the index
     imageIndex.set(imageIndex.get()+1)
@@ -51,6 +52,10 @@ i1.grid()
 tkinter.Label(app, text="Image Data").grid();
 i2 = tkinter.Entry(app, textvariable=imageData)
 i2.grid()
+
+tkinter.Label(app, text="Dataset Path").grid();
+i3 = tkinter.Entry(app, textvariable=datasetPath)
+i3.grid()
 
 # Capture from camera
 cv2capture = cv2.VideoCapture(0)
@@ -87,8 +92,6 @@ def display_video():
 def main():
     display_video()
     window.mainloop()
-    print("Closing annotations file")
-    annotationsFile.close()
 
 if __name__ == "__main__":
     main();
