@@ -1,25 +1,19 @@
 import torch
-from train import NeuralNetwork, test_data
+from torch.utils.data import dataloader
+from train import NeuralNetwork
+from dataloader import test_data
 
 model = NeuralNetwork()
 model.load_state_dict(torch.load("model/model.pth"))
 
 classes = [
-    "T-shirt/top",
-    "Trouser",
-    "Pullover",
-    "Dress",
-    "Coat",
-    "Sandal",
-    "Shirt",
-    "Sneaker",
-    "Bag",
-    "Ankle boot",
+    "Does not have brendan",
+    "Has brendan",
 ]
 
 def main():
     model.eval()
-    x, y = test_data[0][0], test_data[0][1]
+    x, y = test_data[1][0], test_data[1][1]
     with torch.no_grad():
         pred = model(x)
         predicted, actual = classes[pred[0].argmax(0)], classes[y]
