@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor, Lambda, Compose
 import matplotlib.pyplot as plt
-from dataloader import train_dataloader, test_dataloader # Import the dataloaders from the custom dataset
+from lib.dataloader import train_dataloader, test_dataloader # Import the dataloaders from the custom dataset
 
 def main():
     epochs = 5
