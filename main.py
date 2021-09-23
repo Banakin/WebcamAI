@@ -3,6 +3,7 @@ from PIL import ImageTk, Image
 import pandas as pd
 import cv2
 import os
+from lib.image import getImage, saveImage
 
 # Main function
 def main():
@@ -29,7 +30,7 @@ def main():
 
     # Start the video stream
     cv2capture = cv2.VideoCapture(0)
-    display_video()
+    webcamDisplay()
 
     # tkinter loop to keep the window running
     window.mainloop();
@@ -73,35 +74,16 @@ def imageIndexUpdate(a=None, b=None, c=None):
     except:
         imageIndex.set(0)
 
-# Capture the video stream
-def video_stream():
-    _, frame = cv2capture.read()
-    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Center crop the image as a square (Only works on horizontal cameras)
-    height = int(cv2capture.get(cv2.CAP_PROP_FRAME_HEIGHT));
-    width = int(cv2capture.get(cv2.CAP_PROP_FRAME_WIDTH));
-
-    left = int((width - height)/2);
-    right = left + height;
-
-    cropped_image = cv2image[0:height, left:right]
-
-    # Scale the image down to 96 x 96
-    resized_image = cv2.resize(cropped_image, (128, 128));
-
-    # Make image work in tkinter
-    return Image.fromarray(resized_image)
-
-# Display the stream in the window
-def display_video():
-    img = video_stream();
+# Display the webcam
+def webcamDisplay():
+    # Get the current image
+    img = getImage(cv2capture);
     imgtk = ImageTk.PhotoImage(image=img)
 
     # Add feed to window
     viewPort.imgtk = imgtk
     viewPort.configure(image=imgtk)
-    viewPort.after(1, display_video)
+    viewPort.after(1, webcamDisplay)
 
 # Make sure the user is running the script intentionally
 if __name__ == "__main__":
