@@ -1,5 +1,3 @@
-from tkinter.constants import LEFT
-import numpy as np
 import tkinter
 from PIL import ImageTk, Image
 import cv2
