@@ -15,7 +15,7 @@ lmain.grid()
 
 imageIndex = tkinter.IntVar(app, value=0);
 imageData = tkinter.StringVar(app, value="1");
-datasetPath = tkinter.StringVar(app, value="./data/CustomDataset/raw");
+datasetPath = tkinter.StringVar(app, value="../data/CustomDataset/raw");
 
 # Create a button for saving the image to the first data set
 def saveImage():

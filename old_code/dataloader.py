@@ -2,8 +2,8 @@ from torch.utils.data import DataLoader
 from lib.dataset import CustomImageDataset
 import matplotlib.pyplot as plt
 
-training_data = CustomImageDataset("./data/CustomDataset/raw/images.csv", "./data/CustomDataset/raw")
-test_data = CustomImageDataset("./data/CustomDataset/testing/images.csv", "./data/CustomDataset/testing")
+training_data = CustomImageDataset("../data/CustomDataset/raw/images.csv", "../data/CustomDataset/raw")
+test_data = CustomImageDataset("../data/CustomDataset/testing/images.csv", "../data/CustomDataset/testing")
 
 train_dataloader = DataLoader(training_data, batch_size=64, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=1, shuffle=True)
