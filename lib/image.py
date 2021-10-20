@@ -1,5 +1,6 @@
 import cv2
 from PIL import Image
+import os
 
 # Capture the current image from the cv2 video stream
 def getImage(videoStream):
@@ -22,22 +23,19 @@ def getImage(videoStream):
     return Image.fromarray(resized_image)
 
 # Save the current image from the cv2 video stream
-def saveImage(image, annotationsFile, index, data, path):
+def saveImage(image, annotationsFileName, index, data, path):
     print("Saving image");
     name = "image"+str(index)+".png"
 
     # Save image
-    path = os.path.join(datasetPath.get(), name)
-    img.save(path, "PNG")
-    print("Image saved at "+path)
+    imgPath = os.path.join(path, name)
+    image.save(imgPath, "PNG")
+    print("Image saved at "+imgPath)
 
     # Save data associated with the image
-    annotationsFile = open(os.path.join(datasetPath.get(), "images.csv"), "a+")
-    data = name+", "+imageData.get()+"\n"
+    annotationsFile = open(os.path.join(path, annotationsFileName), "a+")
+    data = name+", "+data+"\n"
     annotationsFile.write(data)
     print(data)
     annotationsFile.read() # i have to read the file or else it doesn't save for some reason
     annotationsFile.close() # close the file
-
-    # Update the index
-    imageIndex.set(imageIndex.get()+1)
