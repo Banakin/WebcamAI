@@ -37,5 +37,5 @@ def saveImage(image, annotationsFileName, index, data, path):
     data = name+", "+data+"\n"
     annotationsFile.write(data)
     print(data)
-    annotationsFile.read() # i have to read the file or else it doesn't save for some reason
+    annotationsFile.read() # I have to read the file or else it doesn't save for some reason
     annotationsFile.close() # close the file

@@ -116,7 +116,7 @@ def capTestingImage():
 
 # Train and save the model
 def trainModel():
-    trainAndSave(datasetPath.get(), annotationsFile.get(), 64, outputPath.get())
+    trainAndSave(datasetPath.get(), annotationsFile.get(), batchSize.get(), testingDatasetPath.get(), testingBatchSize.get(), outputPath.get())
 
 # Update the imageIndex variable on path change
 def imageIndexUpdate(a=None, b=None, c=None):

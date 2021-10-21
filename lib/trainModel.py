@@ -10,9 +10,16 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
 # Main function that trains and saves the model
-def trainAndSave(path, annotationsFile, batchSize, modelSavePath):
-    dataset = CustomImageDataset(os.path.join(path, annotationsFile), path)
-    dataloader = DataLoader(dataset, batch_size=batchSize, shuffle=True)
+def trainAndSave(path, annotationsFile, batchSize, test_path, test_batchSize, modelSavePath):
+    train_dataset = CustomImageDataset(os.path.join(path, annotationsFile), path)
+    test_dataset = CustomImageDataset(os.path.join(test_path, annotationsFile), test_path)
+    train_dataloader = DataLoader(train_dataset, batch_size=batchSize, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=test_batchSize, shuffle=True)
+
+    for X, y in test_dataloader:
+        print("Shape of X [N, C, H, W]: ", X.shape)
+        print("Shape of y: ", y.shape, y.dtype)
+        break
 
     model = NeuralNetwork().to(device)
     loss_fn = nn.CrossEntropyLoss()
@@ -21,7 +28,8 @@ def trainAndSave(path, annotationsFile, batchSize, modelSavePath):
     epochs = 5
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
-        train(dataloader, model, loss_fn, optimizer)
+        train(train_dataloader, model, loss_fn, optimizer)
+        test(test_dataloader, model, loss_fn)
     print("Done!")
 
     torch.save(model.state_dict(), modelSavePath)
@@ -47,6 +55,22 @@ def train(dataloader, model, loss_fn, optimizer):
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
+# Testing function
+def test(dataloader, model, loss_fn):
+    size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+    model.eval()
+    test_loss, correct = 0, 0
+    with torch.no_grad():
+        for X, y in dataloader:
+            X, y = X.to(device), y.to(device)
+            pred = model(X)
+            test_loss += loss_fn(pred, y).item()
+            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+    test_loss /= num_batches
+    correct /= size
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+
 # Custom Dataset Class
 class CustomImageDataset(Dataset):
     def __init__(self, annotations_file, img_dir, transform=None, target_transform=None):
@@ -68,6 +92,7 @@ class CustomImageDataset(Dataset):
             label = self.target_transform(label)
         return image, label
 
+# Neural network class
 class NeuralNetwork(nn.Module):
     def __init__(self):
         super(NeuralNetwork, self).__init__()
