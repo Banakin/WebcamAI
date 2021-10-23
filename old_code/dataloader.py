@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from lib.dataset import CustomImageDataset
+from dataset import CustomImageDataset
 import matplotlib.pyplot as plt
 
 training_data = CustomImageDataset("../data/CustomDataset/raw/images.csv", "../data/CustomDataset/raw")
