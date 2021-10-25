@@ -4,8 +4,6 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from torchvision.io import read_image
-from torchvision import datasets
-from torchvision.transforms import ToTensor, Lambda, Compose
 
 # See if we can use CUDA (GPU), otherwise use the CUP
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -17,11 +15,6 @@ def trainAndSave(path, annotationsFile, batchSize, test_path, test_batchSize, mo
     test_dataset = CustomImageDataset(os.path.join(test_path, annotationsFile), test_path)
     train_dataloader = DataLoader(train_dataset, batch_size=batchSize, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=test_batchSize, shuffle=True)
-
-    # for X, y in train_dataloader:
-    #     print("Shape of X [N, C, H, W]: ", X.shape)
-    #     print("Shape of y: ", y.shape, y.dtype)
-    #     break
 
     model = NeuralNetwork().to(device)
     loss_fn = nn.CrossEntropyLoss()

@@ -5,6 +5,7 @@ import cv2
 import os
 from lib.image import getImage, saveImage
 from lib.trainModel import trainAndSave
+from lib.seeImage import seeImage
 
 # Main function
 def main():
@@ -87,8 +88,10 @@ def uiSetup(window):
     tk.Entry(window, textvariable=outputPath).grid(column=1, row=7)
 
     # Currently seeing section
-    tk.Label(window, text="Currently Seeing:").grid(column=2, row=1)
-    tk.Label(window, text="WIP, come back soon").grid(column=2, row=2)
+    tk.Button(window, text ="Look At Camera", command=lookAtCam).grid(column=2, row=1);
+
+    tk.Label(window, text="Currently Seeing:").grid(column=2, row=3)
+    tk.Label(window, text="WIP, come back soon").grid(column=2, row=4)
 
 # Webcam Display Loop
 def webcamDisplay():
@@ -117,6 +120,10 @@ def capTestingImage():
 # Train and save the model
 def trainModel():
     trainAndSave(datasetPath.get(), annotationsFile.get(), batchSize.get(), testingDatasetPath.get(), testingBatchSize.get(), outputPath.get())
+
+# Run model on current image from webcam
+def lookAtCam():
+    seeImage(currentImg)
 
 # Update the imageIndex variable on path change
 def imageIndexUpdate(a=None, b=None, c=None):
