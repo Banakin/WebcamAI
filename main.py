@@ -12,14 +12,12 @@ def main():
     global imageData, datasetPath, annotationsFile, \
         outputPath, imageIndex, cv2capture, \
         testingDatasetPath, testingImageIndex, \
-        batchSize, testingBatchSize, shouldObserve
+        batchSize, testingBatchSize, shouldObserve, \
+        currentlySeeing
 
     # Create window
     window = tk.Tk()
     window.title("WebcamAI")
-
-    # Control if model should look at the current image
-    shouldObserve = False
 
     # Initialize tkinter variables
     imageData = tk.StringVar(window, value="1")
@@ -31,6 +29,8 @@ def main():
     testingImageIndex = tk.IntVar(window, value=0)
     batchSize = tk.IntVar(window, value=64)
     testingBatchSize = tk.IntVar(window, value=1)
+    shouldObserve = tk.BooleanVar(window, value=False)
+    currentlySeeing = tk.StringVar(window, "Not Looking")
 
     # Set up the UI components
     uiSetup(window)
@@ -94,10 +94,10 @@ def uiSetup(window):
     tk.Entry(window, textvariable=outputPath).grid(column=1, row=7)
 
     # Currently seeing section
-    tk.Button(window, text ="Look At Camera", command=lookAtCam).grid(column=2, row=1);
+    tk.Checkbutton(window, text ="Look At Camera", variable=shouldObserve).grid(column=2, row=1);
 
     tk.Label(window, text="Currently Seeing:").grid(column=2, row=3)
-    tk.Label(window, text="WIP, come back soon").grid(column=2, row=4)
+    tk.Label(window, textvariable=currentlySeeing).grid(column=2, row=4)
 
 # Webcam Display Loop
 def webcamDisplay():
@@ -108,9 +108,11 @@ def webcamDisplay():
     # Make the image work with TkInter
     imgtk = ImageTk.PhotoImage(image=currentImg)
 
-    # If we should observe the current view, observe it
-    if shouldObserve:
-        seeImage(currentImg)
+    # If we should observe the current image, observe it
+    if shouldObserve.get():
+        currentlySeeing.set(seeImage(currentImg))
+    else:
+        currentlySeeing.set("Not Looking")
 
     # Add feed to window
     viewPort.imgtk = imgtk
@@ -130,10 +132,6 @@ def capTestingImage():
 # Train and save the model
 def trainModel():
     trainAndSave(datasetPath.get(), annotationsFile.get(), batchSize.get(), testingDatasetPath.get(), testingBatchSize.get(), outputPath.get())
-
-# Enable live image observation
-def lookAtCam():
-    shouldObserve = True
 
 # Update the imageIndex variable on path change
 def imageIndexUpdate(a=None, b=None, c=None):

@@ -16,4 +16,4 @@ def seeImage(PIL_image):
     with torch.no_grad():
         pred = model(x)
         predicted = classes[pred[0].argmax(0)]
-        print(f'Predicted: "{predicted}"')
+        return(f'"{predicted}"')
