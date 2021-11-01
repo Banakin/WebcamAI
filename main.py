@@ -9,11 +9,17 @@ from lib.seeImage import seeImage
 
 # Main function
 def main():
-    global imageData, datasetPath, annotationsFile, outputPath, imageIndex, cv2capture, testingDatasetPath, testingImageIndex, batchSize, testingBatchSize
+    global imageData, datasetPath, annotationsFile, \
+        outputPath, imageIndex, cv2capture, \
+        testingDatasetPath, testingImageIndex, \
+        batchSize, testingBatchSize, shouldObserve
 
     # Create window
     window = tk.Tk()
     window.title("WebcamAI")
+
+    # Control if model should look at the current image
+    shouldObserve = False
 
     # Initialize tkinter variables
     imageData = tk.StringVar(window, value="1")
@@ -102,6 +108,10 @@ def webcamDisplay():
     # Make the image work with TkInter
     imgtk = ImageTk.PhotoImage(image=currentImg)
 
+    # If we should observe the current view, observe it
+    if shouldObserve:
+        seeImage(currentImg)
+
     # Add feed to window
     viewPort.imgtk = imgtk
     viewPort.configure(image=imgtk)
@@ -121,9 +131,9 @@ def capTestingImage():
 def trainModel():
     trainAndSave(datasetPath.get(), annotationsFile.get(), batchSize.get(), testingDatasetPath.get(), testingBatchSize.get(), outputPath.get())
 
-# Run model on current image from webcam
+# Enable live image observation
 def lookAtCam():
-    seeImage(currentImg)
+    shouldObserve = True
 
 # Update the imageIndex variable on path change
 def imageIndexUpdate(a=None, b=None, c=None):

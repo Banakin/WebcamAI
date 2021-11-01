@@ -1,5 +1,8 @@
+# Misc
 .DS_Store
 data/FashionMNIST
 __pycache__
-.pth
-.png
+
+# Dataset files
+*.pth
+*.png
