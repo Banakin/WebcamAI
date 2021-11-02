@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from torchvision.io import read_image
+import torchvision.transforms as transforms
 
 # See if we can use CUDA (GPU), otherwise use the CUP
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -59,6 +60,7 @@ def test(dataloader, model, loss_fn):
     with torch.no_grad():
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
+            
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()

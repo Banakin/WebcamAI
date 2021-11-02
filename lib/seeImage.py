@@ -7,8 +7,8 @@ def seeImage(PIL_image):
     model.load_state_dict(torch.load("model/model.pth"))
 
     classes = [
-        "No person",
-        "Has person",
+        "Hand",
+        "No hand",
     ]
 
     model.eval()
