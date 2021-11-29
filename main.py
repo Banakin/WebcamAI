@@ -5,7 +5,7 @@ import cv2
 import os
 from lib.image import getImage, saveImage
 from lib.trainModel import trainAndSave
-from lib.seeImage import seeImage, seeTestingImage
+from lib.seeImage import seeImage #, seeTestingImage
 
 # Main function
 def main():
@@ -14,7 +14,7 @@ def main():
         testingDatasetPath, testingImageIndex, \
         batchSize, testingBatchSize, shouldObserve, \
         currentlySeeing, shouldRecord, shouldRecordTest, \
-        epochs
+        epochs, outputLabels
 
     # Create window
     window = tk.Tk()
@@ -35,6 +35,7 @@ def main():
     shouldRecordTest = tk.BooleanVar(window, value=False)
     currentlySeeing = tk.StringVar(window, "Not Looking")
     epochs = tk.IntVar(window, value=5)
+    outputLabels = tk.StringVar(window, "no person, person")
 
     # Set up the UI components
     uiSetup(window)
@@ -46,8 +47,8 @@ def main():
 
     # Update testing image index when annotationsFile or testingDatasetPath are updated
     testingImageIndexUpdate()
-    annotationsFile.trace('w', imageIndexUpdate)
-    testingDatasetPath.trace('w', imageIndexUpdate)
+    annotationsFile.trace('w', testingImageIndexUpdate)
+    testingDatasetPath.trace('w', testingImageIndexUpdate)
 
     # Start the video stream
     cv2capture = cv2.VideoCapture(0)
@@ -101,10 +102,13 @@ def uiSetup(window):
     tk.Entry(window, textvariable=outputPath).grid(column=1, row=9)
 
     # Currently seeing section
-    tk.Checkbutton(window, text ="Look At Camera", variable=shouldObserve).grid(column=2, row=1);
+    tk.Label(window, text="Image Labels:").grid(column=2, row=1)
+    tk.Label(window, textvariable=outputLabels).grid(column=2, row=2)
 
-    tk.Label(window, text="Currently Seeing:").grid(column=2, row=3)
-    tk.Label(window, textvariable=currentlySeeing).grid(column=2, row=4)
+    tk.Checkbutton(window, text ="Look At Camera", variable=shouldObserve).grid(column=2, row=3);
+
+    tk.Label(window, text="Currently Seeing:").grid(column=2, row=4)
+    tk.Label(window, textvariable=currentlySeeing).grid(column=2, row=5)
 
 # Webcam Display Loop
 def webcamDisplay():
@@ -117,8 +121,8 @@ def webcamDisplay():
 
     # If we should observe the current image, observe it
     if shouldObserve.get():
-        # currentlySeeing.set(seeImage(currentImg))
-        currentlySeeing.set(seeTestingImage(1028, testingDatasetPath.get(), annotationsFile.get()))
+        currentlySeeing.set(seeImage(currentImg, outputPath.get()))
+        # currentlySeeing.set(seeTestingImage(1028, testingDatasetPath.get(), annotationsFile.get()))
     else:
         currentlySeeing.set("Not Looking")
 
@@ -155,7 +159,7 @@ def imageIndexUpdate(a=None, b=None, c=None):
     except:
         imageIndex.set(0)
 
-# Update the imageIndex variable on path change
+# Update the testingImageIndex variable on path change
 def testingImageIndexUpdate(a=None, b=None, c=None):
     try:
         testingImageIndex.set(len(pd.read_csv(os.path.join(testingDatasetPath.get(), annotationsFile.get()), header=None)))
