@@ -35,7 +35,7 @@ def main():
     shouldRecordTest = tk.BooleanVar(window, value=False)
     currentlySeeing = tk.StringVar(window, "Not Looking")
     epochs = tk.IntVar(window, value=5)
-    outputLabels = tk.StringVar(window, "no person, person")
+    outputLabels = tk.StringVar(window, "No Person, Person")
 
     # Set up the UI components
     uiSetup(window)
@@ -103,7 +103,7 @@ def uiSetup(window):
 
     # Currently seeing section
     tk.Label(window, text="Image Labels:").grid(column=2, row=1)
-    tk.Label(window, textvariable=outputLabels).grid(column=2, row=2)
+    tk.Entry(window, textvariable=outputLabels).grid(column=2, row=2)
 
     tk.Checkbutton(window, text ="Look At Camera", variable=shouldObserve).grid(column=2, row=3);
 
@@ -121,7 +121,7 @@ def webcamDisplay():
 
     # If we should observe the current image, observe it
     if shouldObserve.get():
-        currentlySeeing.set(seeImage(currentImg, outputPath.get()))
+        currentlySeeing.set(seeImage(currentImg, outputPath.get(), outputLabels.get()))
         # currentlySeeing.set(seeTestingImage(1028, testingDatasetPath.get(), annotationsFile.get()))
     else:
         currentlySeeing.set("Not Looking")

@@ -4,7 +4,7 @@ from lib.trainModel import NeuralNetwork, device, CustomImageDataset
 from torchvision.transforms import transforms
 import numpy as np
 
-def seeImage(PIL_image, model_path):
+def seeImage(PIL_image, model_path, output_labels):
     transform = transforms.Compose([
         transforms.PILToTensor()
     ])
@@ -12,10 +12,7 @@ def seeImage(PIL_image, model_path):
     model = NeuralNetwork()
     model.load_state_dict(torch.load(model_path))
 
-    classes = [
-        "No person",
-        "Person",
-    ]
+    classes = output_labels.split(", ")
 
     model.eval()
     data = transform(PIL_image).float().to(device).unsqueeze(0)
