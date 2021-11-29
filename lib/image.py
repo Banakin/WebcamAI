@@ -5,7 +5,7 @@ import os
 # Capture the current image from the cv2 video stream
 def getImage(videoStream):
     _, frame = videoStream.read()
-    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     # Center crop the image as a square (Only works on horizontal cameras)
     height = int(videoStream.get(cv2.CAP_PROP_FRAME_HEIGHT));
@@ -16,11 +16,11 @@ def getImage(videoStream):
 
     cropped_image = cv2image[0:height, left:right]
 
-    # Scale the image down to 96 x 96
+    # Scale the image down to 128 x 128
     resized_image = cv2.resize(cropped_image, (128, 128));
 
     # Make image work in tkinter
-    return Image.fromarray(resized_image)
+    return Image.fromarray(resized_image).convert('RGB')
 
 # Save the current image from the cv2 video stream
 def saveImage(image, annotationsFileName, index, data, path):

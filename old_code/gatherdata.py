@@ -72,7 +72,7 @@ def video_stream():
 
     cropped_image = cv2image[0:height, left:right]
 
-    # Scale the image down to 96 x 96
+    # Scale the image down to 128 x 128
     resized_image = cv2.resize(cropped_image, (128, 128));
 
     # Make image work in tkinter

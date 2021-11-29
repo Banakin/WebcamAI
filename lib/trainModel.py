@@ -5,15 +5,19 @@ from torch import nn
 from torch.utils.data import Dataset, DataLoader
 from torchvision.io import read_image
 import torchvision.transforms as transforms
+import torch.nn.functional as F
 
 # See if we can use CUDA (GPU), otherwise use the CUP
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
 # Main function that trains and saves the model
-def trainAndSave(path, annotationsFile, batchSize, test_path, test_batchSize, modelSavePath):
-    train_dataset = CustomImageDataset(os.path.join(path, annotationsFile), path)
-    test_dataset = CustomImageDataset(os.path.join(test_path, annotationsFile), test_path)
+def trainAndSave(path, annotationsFile, epochs, batchSize, test_path, test_batchSize, modelSavePath):
+    transform = transforms.Compose([
+    ])
+
+    train_dataset = CustomImageDataset(os.path.join(path, annotationsFile), path, transform)
+    test_dataset = CustomImageDataset(os.path.join(test_path, annotationsFile), test_path, transform)
     train_dataloader = DataLoader(train_dataset, batch_size=batchSize, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=test_batchSize, shuffle=True)
 
@@ -21,7 +25,6 @@ def trainAndSave(path, annotationsFile, batchSize, test_path, test_batchSize, mo
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
 
-    epochs = 5
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
@@ -47,7 +50,7 @@ def train(dataloader, model, loss_fn, optimizer):
         loss.backward()
         optimizer.step()
         
-        if batch % 1 == 0:
+        if batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
@@ -88,23 +91,28 @@ class CustomImageDataset(Dataset):
         if self.target_transform:
             label = self.target_transform(label)
         return image, label
-
-# Neural network class
+        
 class NeuralNetwork(nn.Module):
     def __init__(self):
-        super(NeuralNetwork, self).__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(128*128, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 32),
-            nn.ReLU(),
-            nn.Linear(32, 2)
-        )
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16*29*29, 120)
+        self.fc2 = nn.Linear(120, 75)
+        self.fc3 = nn.Linear(75, 2)
 
     def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
+        # 2D Convolution and pooling stack
+        x = F.relu(self.conv1(x))
+        x = self.pool(x)
+        x = F.relu(self.conv2(x))
+        x = self.pool(x)
+
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+
+        # Linearization stack
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
