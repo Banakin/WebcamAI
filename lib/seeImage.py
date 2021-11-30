@@ -9,10 +9,11 @@ def seeImage(PIL_image, model_path, output_labels):
         transforms.PILToTensor()
     ])
     
-    model = NeuralNetwork().to(device)
-    model.load_state_dict(torch.load(model_path))
 
     classes = output_labels.split(", ")
+
+    model = NeuralNetwork(len(classes)).to(device)
+    model.load_state_dict(torch.load(model_path))
 
     model.eval()
     data = transform(PIL_image).float().to(device).unsqueeze(0)

@@ -98,7 +98,7 @@ def uiSetup(window):
     tk.Label(window, text="Testing Batch Size:").grid(column=1, row=6)
     tk.Entry(window, textvariable=testingBatchSize).grid(column=1, row=7)
 
-    tk.Label(window, text="Model output path").grid(column=1, row=8)
+    tk.Label(window, text="Model Path").grid(column=1, row=8)
     tk.Entry(window, textvariable=outputPath).grid(column=1, row=9)
 
     # Currently seeing section
@@ -150,7 +150,7 @@ def capImage(recordType="train"):
 
 # Train and save the model
 def trainModel():
-    trainAndSave(datasetPath.get(), annotationsFile.get(), epochs.get(), batchSize.get(), testingDatasetPath.get(), testingBatchSize.get(), outputPath.get())
+    trainAndSave(datasetPath.get(), annotationsFile.get(), epochs.get(), batchSize.get(), testingDatasetPath.get(), testingBatchSize.get(), outputPath.get(), outputLabels.get())
 
 # Update the imageIndex variable on path change
 def imageIndexUpdate(a=None, b=None, c=None):

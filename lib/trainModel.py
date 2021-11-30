@@ -8,11 +8,11 @@ import torchvision.transforms as transforms
 import torch.nn.functional as F
 
 # See if we can use CUDA (GPU), otherwise use the CUP
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 print("Using {} device".format(device))
 
 # Main function that trains and saves the model
-def trainAndSave(path, annotationsFile, epochs, batchSize, test_path, test_batchSize, modelSavePath):
+def trainAndSave(path, annotationsFile, epochs, batchSize, test_path, test_batchSize, modelSavePath, output_labels):
     transform = transforms.Compose([
     ])
 
@@ -21,7 +21,9 @@ def trainAndSave(path, annotationsFile, epochs, batchSize, test_path, test_batch
     train_dataloader = DataLoader(train_dataset, batch_size=batchSize, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=test_batchSize, shuffle=True)
 
-    model = NeuralNetwork().to(device)
+    classes = output_labels.split(", ")
+    
+    model = NeuralNetwork(len(classes)).to(device)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
 
@@ -93,14 +95,14 @@ class CustomImageDataset(Dataset):
         return image, label
         
 class NeuralNetwork(nn.Module):
-    def __init__(self):
+    def __init__(self, outputs):
         super().__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16*29*29, 120)
         self.fc2 = nn.Linear(120, 75)
-        self.fc3 = nn.Linear(75, 2)
+        self.fc3 = nn.Linear(75, outputs)
 
     def forward(self, x):
         # 2D Convolution and pooling stack
